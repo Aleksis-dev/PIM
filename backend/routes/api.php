@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProductGroupController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -9,3 +10,4 @@ use Illuminate\Support\Facades\Route;
 #})->middleware('auth:sanctum');
 
 Route::post('/admin/login', [AuthController::class, 'login']);
+Route::apiResource('/product_group', ProductGroupController::class)->middleware('auth:sanctum');
