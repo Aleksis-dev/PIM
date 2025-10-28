@@ -8,6 +8,11 @@ use Illuminate\Validation\ValidationException;
 
 class ProductGroupController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum')->except(['index', 'show']);
+    }
     /**
      * Display a listing of the resource.
      */
@@ -47,7 +52,7 @@ class ProductGroupController extends Controller
     public function show(product_group $productGroup)
     {
         return response()->json([
-            'product_group' => $productGroup
+            'product_group' => $productGroup::with('products')->get()
         ], 200);
     }
 
@@ -78,12 +83,12 @@ class ProductGroupController extends Controller
      */
     public function destroy(product_group $productGroup)
     {
-        $deletedProductGroup = $productGroup->product_group_name;
+        $deletedProductGroupName = $productGroup->product_group_name;
 
         $productGroup->delete();
 
         return response()->json([
-            "message" => "Deleted product group " + $deletedProductGroup
+            "message" => "Deleted product group " . $deletedProductGroupName
         ], 200);
     }
 }
