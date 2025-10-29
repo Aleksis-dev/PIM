@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 #})->middleware('auth:sanctum');
 
 Route::post('/admin/login', [AuthController::class, 'login']);
+Route::get('/admin/authorize', [AuthController::class, 'authorize_check']);
 
 Route::apiResource('/product_group', ProductGroupController::class);
 Route::post('/product_group/{product_group}/products', [ProductsController::class, 'store']);

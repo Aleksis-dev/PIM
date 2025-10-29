@@ -8,6 +8,11 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+
+    public function __construct() {
+        $this->middleware("auth:sanctum")->except(['login']);
+    }
+
     public function login(Request $request) {
         try {
             $validated = $request->validate([
@@ -38,5 +43,11 @@ class AuthController extends Controller
                 ]
             ], 422);
         }
+    }
+
+    public function authorize_check() {
+        return response()->json([
+            "authorized" => true 
+        ], 200);
     }
 }
