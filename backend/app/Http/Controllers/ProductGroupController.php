@@ -42,7 +42,7 @@ class ProductGroupController extends Controller
         $productGroup = product_group::create($validated);
 
         return response()->json([
-            'product_group' => $productGroup   
+            'product_groups' => [$productGroup]   
         ], 200);
     }
 
@@ -51,8 +51,9 @@ class ProductGroupController extends Controller
      */
     public function show(product_group $productGroup)
     {
+        $productGroup->load('products');
         return response()->json([
-            'product_group' => $productGroup::with('products')->get()
+            'product_groups' => $productGroup
         ], 200);
     }
 
@@ -74,7 +75,7 @@ class ProductGroupController extends Controller
         $productGroup->update($validated);
 
         return response()->json([
-            'product_group' => $productGroup   
+            'product_groups' => $productGroup   
         ], 200);
     }
 
