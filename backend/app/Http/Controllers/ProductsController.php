@@ -2,32 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\product_group;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use App\Models\products;
+use App\Models\ProductGroup;
 
 class ProductsController extends Controller
 {
-
-    public function __construct() {
+    public function __construct()
+    {
         $this->middleware('auth:sanctum')->except(['index', 'show']);
     }
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
-        $products = Products::all();
+        $products = Product::all();
         return response()->json([
             'products' => $products
         ], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request, product_group $productGroup)
+    public function store(Request $request, ProductGroup $productGroup)
     {
         try {
             $validated = $request->validate([
@@ -50,20 +45,14 @@ class ProductsController extends Controller
         ], 200);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(products $product)
+    public function show(Product $product)
     {
         return response()->json([
-            'product' => $product,
+            'product' => $product
         ], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, products $product)
+    public function update(Request $request, Product $product)
     {
         try {
             $validated = $request->validate([
@@ -79,24 +68,20 @@ class ProductsController extends Controller
         }
 
         $product->update($validated);
+        $product->load('productGroup');
 
         return response()->json([
-            'product' => $product,
-            'product_group' => $product->product_group()
+            'product' => $product
         ], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(products $product)
+    public function destroy(Product $product)
     {
         $deletedProductName = $product->product_name;
-
         $product->delete();
-
         return response()->json([
             'message' => "Deleted product " . $deletedProductName
         ], 200);
     }
 }
+

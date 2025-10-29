@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\products;
+use App\Models\Product;
 
-class product_group extends Model
+class ProductGroup extends Model
 {
     /** @use HasFactory<\Database\Factories\ProductGroupFactory> */
     use HasFactory;
@@ -14,6 +14,6 @@ class product_group extends Model
     public $fillable = ["product_group_name"];
 
     public function products() {
-        return $this->hasMany(products::class);
+        return $this->hasMany(Product::class);
     }
 }

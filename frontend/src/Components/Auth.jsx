@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { ProtectedFetch } from "./FetchHelper";
 
-function Auth({ Component }) {
+function Auth({ Route }) {
   const [authorized, setAuthorized] = useState(null);
   const bearerToken = localStorage.getItem("sanctum-token");
 
@@ -13,13 +13,10 @@ function Auth({ Component }) {
     }
 
     const checkAuth = async () => {
-      try {
-        const response = await ProtectedFetch(
-          "http://127.0.0.1:8000/api/admin/authorize",
-          "GET"
-        );
-        setAuthorized(response.ok && response.data.authorized);
-      } catch {
+      const response = await ProtectedFetch("http://127.0.0.1:8000/api/admin/authorize", "GET");
+      if (response.ok && response.data.authorized) {
+        setAuthorized(true);
+      } else {
         setAuthorized(false);
       }
     };
@@ -27,9 +24,15 @@ function Auth({ Component }) {
     checkAuth();
   }, [bearerToken]);
 
-  if (authorized === null) return <p>Checking authorization...</p>;
-  if (authorized) return <Component />;
-  return <Navigate to="/" replace />;
+  if (authorized === null) {
+    return <p>Checking authorization...</p>;
+  }
+
+  if (authorized) {
+    return Route;
+  } else {
+    return <Navigate to="/" replace />;
+  }
 }
 
 export default Auth;
