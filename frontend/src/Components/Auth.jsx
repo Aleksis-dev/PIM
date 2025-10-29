@@ -1,44 +1,35 @@
-import { useState } from 'react';
-import { Outlet, Navigate } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { Navigate } from "react-router-dom";
+import { ProtectedFetch } from "./FetchHelper";
 
-function Auth({ Route }) {
+function Auth({ Component }) {
+  const [authorized, setAuthorized] = useState(null);
+  const bearerToken = localStorage.getItem("sanctum-token");
 
-    const [error, setError] = useState(null);
-    const [data, setData] = useState(null);
-
-    let bearerToken = localStorage.getItem("sanctum-token");
-
-    const handleAuthorization = async () => {
-        try {
-            let response = await fetch("http://127.0.0.1:8000/api/admin/authorize", {
-                method: "get",
-                headers: {
-                    "Authorization": `Bearer ${bearerToken}`,
-                    "Content-Type": 'application/json',
-                    "Accept": "application/json"
-                }
-            });
-
-            let data = await response.json();
-            setData(data);
-
-        } catch (error) {
-            setError(error.message);
-        } finally {
-            return data.message;
-        }
-
+  useEffect(() => {
+    if (!bearerToken) {
+      setAuthorized(false);
+      return;
     }
 
-    if (error) {
-        return error;
-    }
+    const checkAuth = async () => {
+      try {
+        const response = await ProtectedFetch(
+          "http://127.0.0.1:8000/api/admin/authorize",
+          "GET"
+        );
+        setAuthorized(response.ok && response.data.authorized);
+      } catch {
+        setAuthorized(false);
+      }
+    };
 
-    if (bearerToken && handleAuthorization !== "Unauthorized") {
-        return <Outlet context={{ Route }}/>
-    } else {
-        return <Navigate to="/" replace/>
-    }
+    checkAuth();
+  }, [bearerToken]);
+
+  if (authorized === null) return <p>Checking authorization...</p>;
+  if (authorized) return <Component />;
+  return <Navigate to="/" replace />;
 }
 
 export default Auth;
